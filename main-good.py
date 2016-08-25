@@ -1,6 +1,5 @@
 import webapp2
 import re
-import cgi
 
 signup_form = """
 <html>
@@ -51,7 +50,7 @@ signup_form = """
 						<td><label class="error">%(verify)s</label></td>
 					</tr>
 					<tr>
-						<td><label class="labels">Email (optional)</label></td>
+						<td><label class="labels">Email</label></td>
 						<td><input type="text" name="email" value="%(typed_email)s"></td>
 						<td><label class="error">%(email)s</label></td>
 					</tr>
@@ -82,10 +81,10 @@ class Signup(webapp2.RequestHandler):
 
 	def post(self):
 		have_error = False
-		username = cgi.escape(self.request.get('username'))
-		password = cgi.escape(self.request.get('password1'))
-		verify = cgi.escape(self.request.get('password2'))
-		email = cgi.escape(self.request.get('email'))
+		username = self.request.get('username')
+		password = self.request.get('password1')
+		verify = self.request.get('password2')
+		email = self.request.get('email')
 
 		if username and valid_username(username):
 			ck_username = ""
@@ -105,23 +104,23 @@ class Signup(webapp2.RequestHandler):
 			ck_verify = "Passwords don't match"
 			have_error = True
 
-		if email and not valid_email(email):
+		if email and valid_email(email):
+			ck_email = ""
+		else:
 			ck_email = "Invalid Email"
 			have_error = True
-		else:
-			ck_email = ""
 
 		if have_error:
-			self.response.write(signup_form % {"typed_username": username, "typed_email": email, "username": ck_username, "password": ck_password, "verify": ck_verify, "email": ck_email})
+			self.response.write(signup_form % {"typed_username": self.request.get("username"), "typed_email": self.request.get("email"), "username": ck_username, "password": ck_password, "verify": ck_verify, "email": ck_email})
 		else:
-			self.redirect('/welcome?username=' + username)			
+			self.redirect('/welcome?username=' + self.request.get("username"))			
 
 
 class Welcome(webapp2.RequestHandler):
 	
 	def get(self):
 
-		welcome_user = cgi.escape(self.request.get('username'))
+		welcome_user = self.request.get('username')
 
 		welcome = """
 		<html>
