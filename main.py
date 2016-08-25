@@ -36,7 +36,7 @@ signup_form = """
 				<table colspan="3">
 					<tr>
 						<td><label class="labels">User Name</label></td>
-						<td><input type="text" name="username"></td>
+						<td><input type="text" name="username" value="%(typed_username)s"></td>
 						<td><label class="error">%(username)s</label></td>
 					</tr>
 					<tr>
@@ -51,7 +51,7 @@ signup_form = """
 					</tr>
 					<tr>
 						<td><label class="labels">Email</label></td>
-						<td><input type="text" name="email"></td>
+						<td><input type="text" name="email" value="%(typed_email)s"></td>
 						<td><label class="error">%(email)s</label></td>
 					</tr>
 				</table>
@@ -77,7 +77,7 @@ def valid_email(email):
 class Signup(webapp2.RequestHandler):
 
 	def get(self):
-		self.response.write(signup_form % {"username": "", "password": "", "verify": "", "email": ""})
+		self.response.write(signup_form % {"typed_username": "", "typed_email": "","username": "", "password": "", "verify": "", "email": ""})
 
 	def post(self):
 		have_error = False
@@ -111,7 +111,7 @@ class Signup(webapp2.RequestHandler):
 			have_error = True
 
 		if have_error:
-			self.response.write(signup_form % {"username": ck_username, "password": ck_password, "verify": ck_verify, "email": ck_email})
+			self.response.write(signup_form % {"typed_username": self.request.get("username"), "typed_email": self.request.get("email"), "username": ck_username, "password": ck_password, "verify": ck_verify, "email": ck_email})
 		else:
 			self.redirect('/welcome?username=' + self.request.get("username"))			
 
